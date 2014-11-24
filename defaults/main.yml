@@ -1,0 +1,15 @@
+---
+##
+## haproxy
+##
+haproxy_bin: /usr/local/sbin/haproxy
+haproxy_download_dir: /opt/src
+haproxy_major_version: "1.5"
+haproxy_version: "1.5.8"
+haproxy_sha256sum: db54b3cf08e530fdd5b67100153bb88293e8d6e179e7aa837412d8ea36a03539
+
+##
+## haproxyctl, wrapper to talk to the haproxy socket
+##
+haproxyctl_dir: "/opt/haproxyctl"
+haproxyctl_bin: "/usr/local/sbin/haproxyctl"

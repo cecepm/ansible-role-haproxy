@@ -1,0 +1,2 @@
+- include: install_haproxy.yml
+- include: install_haproxyctl.yml

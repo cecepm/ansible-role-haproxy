@@ -1,0 +1,51 @@
+## install haproxy from sources
+
+- name: detect if haproxy is already installed
+  stat: path={{ haproxy_bin }}
+  register: haproxy
+
+- name: ensure package dependencies is installed
+  apt: name={{ item }} state=installed
+  with_items:
+  - make
+  - gcc
+  - libpcre3-dev
+  - libssl-dev
+  - zlib1g-dev
+  when: not haproxy.stat.exists
+  sudo: yes
+
+- name: ensure src directory exists
+  file:
+    path: "{{ haproxy_download_dir }}"
+    state: directory
+    owner: "{{ ansible_env.USER }}"
+    mode: "755"
+  when: not haproxy.stat.exists
+  sudo: yes
+
+- name: download haproxy sources
+  get_url:
+    url: "http://www.haproxy.org/download/{{ haproxy_major_version }}/src/haproxy-{{ haproxy_version }}.tar.gz"
+    dest: "{{ haproxy_download_dir }}/haproxy-{{ haproxy_version }}.tar.gz"
+    sha256sum: "{{ haproxy_sha256sum }}"
+  when: not haproxy.stat.exists
+
+- name: expand haproxy sources
+  unarchive:
+    src: "/opt/src/haproxy-{{ haproxy_version }}.tar.gz"
+    dest: "{{ haproxy_download_dir }}/"
+    creates: "{{ haproxy_download_dir }}/haproxy-{{ haproxy_version }}/README"
+    copy: no
+  when: not haproxy.stat.exists
+
+- name: build haproxy
+  command: >
+    make TARGET=linux2628 CPU=native USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1
+    chdir={{ haproxy_download_dir }}/haproxy-{{ haproxy_version }}
+  when: not haproxy.stat.exists
+
+- name: install haproxy
+  command: make install chdir={{ haproxy_download_dir }}/haproxy-{{ haproxy_version }}
+  when: not haproxy.stat.exists
+  sudo: yes

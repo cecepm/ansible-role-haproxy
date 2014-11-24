@@ -1,0 +1,23 @@
+## install haproxy ctl, wrapper to talk to the haproxy socket
+
+- name: ensure haproxyctl dependencies is installed
+  apt: name={{ item }} state=installed
+  with_items:
+  - git
+  - ruby
+  sudo: yes
+
+- name: ensure repo haproxyctl exists
+  git:
+    repo: https://github.com/flores/haproxyctl.git
+    dest: "{{ haproxyctl_dir }}"
+    update: no
+    version: "1.3.0"
+  sudo: yes
+
+- name: ensure haproxyctl is on shell path
+  file:
+    src: "{{ haproxyctl_dir}}/haproxyctl"
+    dest: /usr/local/sbin/haproxyctl
+    state: link
+  sudo: yes
